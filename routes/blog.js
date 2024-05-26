@@ -2,26 +2,45 @@ const express = require("express");
 const Blog = require("../models/blog");
 const { sequelize } = require("../db");
 const router = express.Router();
+const { check, validationResult } = require("express-validator");
 
-router.post("/", async (req, res) => {
-  try {
-    console.log(`Connected to database: ${sequelize.config.database}`);
+router.post(
+  "/",
+  [
+    check("title", "Title is required").not().isEmpty(),
+    check("content", "Content cannot be empty").not().isEmpty(),
+    check("author", "Author is required").not().isEmpty(),
+    check("password", "Password must be 6 or more characters").isLength({
+      min: 6,
+    }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-    const { title, content, author } = req.body;
-    const newBlog = await Blog.create({
-      title,
-      content,
-      author,
-    });
+    try {
+      console.log(`Connected to database: ${sequelize.config.database}`);
 
-    res.status(201).json(newBlog);
-  } catch (e) {
-    res.status(500).json({
-      error: "server_error",
-      message: e.message,
-    });
+      const { title, content, author, password } = req.body;
+
+      const newBlog = await Blog.create({
+        title,
+        content,
+        author,
+        password,
+      });
+
+      res.status(201).json(newBlog);
+    } catch (e) {
+      res.status(500).json({
+        error: "server_error",
+        message: e.message,
+      });
+    }
   }
-});
+);
 
 router.get("/", async (req, res) => {
   try {

@@ -16,6 +16,10 @@ const Blog = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    password: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
   },
   {
     timestamps: true,
