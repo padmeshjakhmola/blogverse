@@ -20,6 +20,7 @@ module.exports = {
       },
       password: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       phone: {
         type: Sequelize.STRING, // Optional field

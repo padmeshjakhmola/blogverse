@@ -3,6 +3,7 @@ const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const User = require("../models/user");
 const { sequelize } = require("../db");
+const bcrypt = require("bcryptjs");
 
 router.get("/", async (req, res) => {
   const user = await User.findAll();
@@ -10,7 +11,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post(
-  "/",
+  "/register",
   [
     check("name", "Name is required").not().isEmpty(),
     check("email", "Email is required")
@@ -47,8 +48,56 @@ router.post(
 
       const { name, email, phone, password } = req.body;
 
-      const user = await User.create({ name, email, phone, password });
+      const salt = await bcrypt.genSalt(10);
+      const encryptedPassword = await bcrypt.hash(password, salt);
+
+      const user = await User.create({
+        name,
+        email,
+        phone,
+        password: encryptedPassword,
+      });
       res.status(201).json(user);
+    } catch (e) {
+      res.status(500).json({
+        error: "login_fail",
+        message: e.message,
+      });
+    }
+  }
+);
+
+router.post(
+  "/login",
+  [
+    check("email", "Email is required").not().isEmpty(),
+    check("password", "Password is required").not().isEmpty(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { email, password } = req.body;
+
+      const user = await User.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        return res.status(400).json("not_exist");
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json("invalid_credentials");
+      }
+
+      res.status(200).json({
+        message: "Successfully login",
+      });
     } catch (e) {
       res.status(500).json({
         error: "login_fail",
