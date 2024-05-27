@@ -29,5 +29,4 @@ baseRouter.use("/blog", blogRouter);
 
 app.use("/v1", baseRouter);
 
-
 module.exports = app;
