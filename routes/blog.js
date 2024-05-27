@@ -10,9 +10,6 @@ router.post(
     check("title", "Title is required").not().isEmpty(),
     check("content", "Content cannot be empty").not().isEmpty(),
     check("author", "Author is required").not().isEmpty(),
-    check("password", "Password must be 6 or more characters").isLength({
-      min: 6,
-    }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -23,13 +20,12 @@ router.post(
     try {
       console.log(`Connected to database: ${sequelize.config.database}`);
 
-      const { title, content, author, password } = req.body;
+      const { title, content, author } = req.body;
 
       const newBlog = await Blog.create({
         title,
         content,
         author,
-        password,
       });
 
       res.status(201).json(newBlog);
