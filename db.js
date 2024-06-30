@@ -1,6 +1,5 @@
-const { Sequelize } = require("sequelize");
-
 require("dotenv").config();
+const { Sequelize } = require("sequelize");
 
 const sequelize = new Sequelize(process.env.POSTGRES_DATABASE, {
   dialect: "postgres",
@@ -12,6 +11,13 @@ const sequelize = new Sequelize(process.env.POSTGRES_DATABASE, {
     },
   },
 });
+
+// const sequelize = new Sequelize("nomadland", "postgres", "postgres", {
+//   host: "localhost",
+//   dialect: "postgres",
+//   port: 5432,
+//   logging: true,
+// });
 
 const connectToDB = async () => {
   try {
@@ -25,20 +31,4 @@ const connectToDB = async () => {
   }
 };
 
-// const startServer = async () => {
-//   try {
-//     await sequelize.authenticate();
-//     console.log("Connection has been established successfully.");
-//     await sequelize.sync();
-//     // await sequelize.sync({ force: true }).then(() => {
-//     //   console.log("Database & tables created!");
-//     // });
-//     console.log("Database synced.");
-//   } catch (error) {
-//     console.error("Unable to connect to the database:", error);
-//   }
-// };
-
-// startServer();
-
-module.exports = { sequelize, connectToDB };
+module.exports = { connectToDB, sequelize };
