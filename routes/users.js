@@ -4,6 +4,7 @@ const { check, validationResult } = require("express-validator");
 const User = require("../models/user");
 const { sequelize } = require("../db");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res) => {
   const user = await User.findAll();
@@ -97,7 +98,26 @@ router.post(
 
       res.status(200).json({
         message: "Successfully login",
+        user,
       });
+
+      // const payload = {
+      //   user: {
+      //     id: user.id,
+      //   },
+      // };
+
+      // jwt.sign(
+      //   payload,
+      //   process.env.JWT_SECRET,
+      //   {
+      //     expiresIn: "1h",
+      //   },
+      //   (err, token) => {
+      //     if (err) throw err;
+      //     res.json({ token });
+      //   }
+      // );
     } catch (e) {
       res.status(500).json({
         error: "login_fail",

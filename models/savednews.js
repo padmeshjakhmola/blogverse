@@ -1,8 +1,7 @@
-const { DataTypes } = require("sequelize");
 const { sequelize } = require("../db");
 
-const Blog = sequelize.define(
-  "blog",
+const SavedNews = sequelize.define(
+  "savednews",
   {
     title: {
       type: DataTypes.STRING,
@@ -10,16 +9,16 @@ const Blog = sequelize.define(
     },
     content: {
       type: DataTypes.TEXT,
-      allowNull: false,
     },
-    author: {
-      type: DataTypes.STRING,
+    url: {
+      type: DataTypes.TEXT,
       allowNull: false,
     },
   },
   {
     timestamps: true,
+    tableName: "savedNews",
   }
 );
 
-module.exports = Blog;
+module.exports = SavedNews;
